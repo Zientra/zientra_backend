@@ -11,9 +11,6 @@ class room_pond {
         this.rooms = new Map();
         this.users = new Map();
     }
-    // =========================
-    // CREATE ROOM
-    // =========================
     create_room(room_name) {
         const room_id = (0, uuid_1.v4)();
         const join_code = Math.random()
@@ -27,30 +24,30 @@ class room_pond {
             join_code
         };
     }
-    // =========================
-    // ADD USER TO ROOM
-    // =========================
     add_user_to_room(join_code, username, display_name, socket) {
         const currRoom = this.get_room_by_code(join_code);
         if (!currRoom) {
             throw new Error("Room not found");
         }
         const user = new user_1.User(username, socket, display_name);
-        // Associate user with this room
         user.current_room_id = currRoom.id;
-        // Store user globally by socket
         this.users.set(socket, user);
-        // Add user to room
         currRoom.add_user(user);
-        // Send existing members to new user
+        // Send current room state to new user
         socket.send(JSON.stringify({
-            type: "room_members",
-            room_id: currRoom.id,
-            join_code: currRoom.join_code,
-            room_name: currRoom.name,
-            members: currRoom.get_members()
+            type: "room_state",
+            room: {
+                room_id: currRoom.id,
+                join_code: currRoom.join_code,
+                room_name: currRoom.name
+            },
+            members: currRoom.get_members(),
+            code: {
+                content: currRoom.code,
+                language: currRoom.language
+            }
         }));
-        // Notify everyone else
+        // Notify existing users
         currRoom.broadcast({
             type: "user_joined",
             room_id: currRoom.id,
@@ -65,9 +62,7 @@ class room_pond {
             user: user
         };
     }
-    // =========================
-    // FIND ROOM BY JOIN CODE
-    // =========================
+    // find room by join_code
     get_room_by_code(join_code) {
         for (const room of this.rooms.values()) {
             if (room.join_code === join_code) {
@@ -76,21 +71,13 @@ class room_pond {
         }
         return undefined;
     }
-    // =========================
-    // FIND ROOM BY ROOM ID
-    // =========================
     get_room(room_id) {
         return this.rooms.get(room_id);
     }
-    // =========================
-    // FIND USER BY SOCKET
-    // =========================
     get_user_by_socket(socket) {
         return this.users.get(socket);
     }
-    // =========================
-    // FIND USER'S CURRENT ROOM
-    // =========================
+    // current room of the user
     get_user_room(socket) {
         const user = this.users.get(socket);
         if (!user || !user.current_room_id) {
@@ -98,9 +85,6 @@ class room_pond {
         }
         return this.rooms.get(user.current_room_id);
     }
-    // =========================
-    // REMOVE USER
-    // =========================
     remove_user(socket) {
         const user = this.users.get(socket);
         if (!user) {

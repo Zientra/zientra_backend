@@ -66,27 +66,38 @@ export class room_pond {
             display_name
         );
 
-        // Associate user with this room
         user.current_room_id = currRoom.id;
 
-        // Store user globally by socket
-        this.users.set(socket, user);
+        this.users.set(
+            socket,
+            user
+        );
 
-        // Add user to room
         currRoom.add_user(user);
 
-        // Send existing members to new user
+        // Send current room state to new user
         socket.send(JSON.stringify({
-            type: "room_members",
-            room_id: currRoom.id,
-            join_code: currRoom.join_code,
-            room_name: currRoom.name,
-            members: currRoom.get_members()
+            type: "room_state",
+
+            room: {
+                room_id: currRoom.id,
+                join_code: currRoom.join_code,
+                room_name: currRoom.name
+            },
+
+            members: currRoom.get_members(),
+
+            code: {
+                content: currRoom.code,
+                language: currRoom.language
+            }
         }));
 
-        // Notify everyone else
+        // Notify existing users
         currRoom.broadcast({
+
             type: "user_joined",
+
             room_id: currRoom.id,
 
             user: {

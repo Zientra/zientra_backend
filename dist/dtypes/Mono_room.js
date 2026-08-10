@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.mono_room = void 0;
 const ws_1 = require("ws");
 class mono_room {
-    constructor(id, join_c, name, mem, ag, msg, ts) {
+    constructor(id, join_c, name, mem, ag, msg, ts, code = "", language = "javascript") {
         this.id = id;
         this.name = name;
         this.join_code = join_c;
@@ -11,6 +11,8 @@ class mono_room {
         this.agents = ag;
         this.messages = msg;
         this.tasks = ts;
+        this.code = code;
+        this.language = language;
     }
     add_user(user) {
         this.members.set(user.user_id, user);
@@ -20,6 +22,12 @@ class mono_room {
     }
     add_message(message) {
         this.messages.push(message);
+    }
+    update_code(code) {
+        this.code = code;
+    }
+    set_language(language) {
+        this.language = language;
     }
     broadcast(message, excludeUserId) {
         const data = JSON.stringify(message);
