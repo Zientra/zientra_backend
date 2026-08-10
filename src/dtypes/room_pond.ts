@@ -118,19 +118,12 @@ export class room_pond {
         return undefined;
     }
 
-
-    // =========================
-    // FIND ROOM BY ROOM ID
-    // =========================
-
     get_room(room_id: string) {
 
         return this.rooms.get(room_id);
 
     }
 
-
-    
 
     get_user_by_socket(socket: WebSocket) {
 

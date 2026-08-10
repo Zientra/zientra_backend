@@ -1,12 +1,14 @@
 import { WebSocket } from "ws";
 import { User } from "./user";
 import { Message } from "./message";
+import { code_editor } from "./code_editor";
 
 export class mono_room {
 
     id: string;
     join_code: string;
     name: string;
+    code_editor : code_editor;
 
     members: Map<string, User>;
 
@@ -36,6 +38,7 @@ export class mono_room {
         this.agents = ag;
         this.messages = msg;
         this.tasks = ts;
+        this.code_editor = new code_editor();
     }
 
     add_user(user: User) {
