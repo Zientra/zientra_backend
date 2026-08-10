@@ -1,27 +1,41 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mono_room = void 0;
-// This is proto of single room 
-// Multiple rooms exist -> Checkout index.ts
+const ws_1 = require("ws");
 class mono_room {
-    constructor(Id, name, mem, ag, msg, ts) {
-        this.id = Id;
+    constructor(id, join_c, name, mem, ag, msg, ts) {
+        this.id = id;
         this.name = name;
+        this.join_code = join_c;
         this.members = mem;
         this.agents = ag;
         this.messages = msg;
         this.tasks = ts;
     }
-    add_user(user_Id) {
-        if (!this.members) {
-            this.members = [];
+    add_user(user) {
+        this.members.set(user.user_id, user);
+    }
+    remove_user(user_id) {
+        this.members.delete(user_id);
+    }
+    add_message(message) {
+        this.messages.push(message);
+    }
+    broadcast(message, excludeUserId) {
+        const data = JSON.stringify(message);
+        for (const member of this.members.values()) {
+            if (member.user_id !== excludeUserId &&
+                member.socket.readyState === ws_1.WebSocket.OPEN) {
+                member.socket.send(data);
+            }
         }
-        try {
-            this.members.push(user_Id);
-        }
-        catch (err) {
-            console.log(err);
-        }
+    }
+    get_members() {
+        return Array.from(this.members.values()).map(member => ({
+            user_id: member.user_id,
+            username: member.username,
+            display_name: member.display_name
+        }));
     }
 }
 exports.mono_room = mono_room;

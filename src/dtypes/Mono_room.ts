@@ -1,44 +1,90 @@
 import { WebSocket } from "ws";
+import { User } from "./user";
+import { Message } from "./message";
 
-// This is proto/structure of single room 
-// Multiple rooms exist -> Checkout index.ts
-
-export class mono_room{
-
-    // v1 : vars not confirmed
+export class mono_room {
 
     id: string;
+    join_code: string;
     name: string;
 
-    members: WebSocket[];  // user IDs
-    agents: string[];   // agent IDs
+    members: Map<string, User>;
 
-    messages: string[]; // message IDs
-    tasks: string[];    // task IDs
+    agents: string[];
+
+    messages: Message[];
+    tasks: string[];
 
     repositoryId?: string;
     workspaceId?: string;
-  
-    constructor(Id : string, name:string, mem:WebSocket[], ag : string[], msg : string[], ts : string[]){
-        this.id = Id;
-        this.name = name;   
+
+    constructor(
+        id: string,
+        join_c: string,
+        name: string,
+        mem: Map<string, User>,
+        ag: string[],
+        msg: Message[],
+        ts: string[]
+    ) {
+        this.id = id;
+        this.name = name;
+        this.join_code = join_c;
+
         this.members = mem;
+
         this.agents = ag;
         this.messages = msg;
         this.tasks = ts;
     }
 
-    add_user(user_Id: WebSocket){
-        if(!this.members){
-            this.members = [];
-        }
+    add_user(user: User) {
 
+        this.members.set(
+            user.user_id,
+            user
+        );
+    }
 
-        try{
-            this.members.push(user_Id);
+    remove_user(user_id: string) {
+
+        this.members.delete(user_id);
+    }
+
+    add_message(message: Message) {
+
+        this.messages.push(message);
+    }
+
+    broadcast(
+        message: object,
+        excludeUserId?: string
+    ) {
+
+        const data = JSON.stringify(message);
+
+        for (const member of this.members.values()) {
+
+            if (
+                member.user_id !== excludeUserId &&
+                member.socket.readyState === WebSocket.OPEN
+            ) {
+
+                member.socket.send(data);
+
+            }
         }
-        catch(err){
-            console.log(err);
-        }
+    }
+
+    get_members() {
+
+        return Array.from(
+            this.members.values()
+        ).map(member => ({
+            user_id: member.user_id,
+            username: member.username,
+            display_name: member.display_name
+        }));
+
     }
 }
