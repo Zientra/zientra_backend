@@ -20,11 +20,6 @@ export class room_pond {
         this.users = new Map<WebSocket, User>();
     }
 
-
-    // =========================
-    // CREATE ROOM
-    // =========================
-
     create_room(room_name: string) {
 
         const room_id = uuidv4();
@@ -51,11 +46,6 @@ export class room_pond {
             join_code
         };
     }
-
-
-    // =========================
-    // ADD USER TO ROOM
-    // =========================
 
     add_user_to_room(
         join_code: string,
@@ -114,10 +104,7 @@ export class room_pond {
     }
 
 
-    // =========================
-    // FIND ROOM BY JOIN CODE
-    // =========================
-
+    // find room by join_code
     get_room_by_code(join_code: string) {
 
         for (const room of this.rooms.values()) {
@@ -143,9 +130,7 @@ export class room_pond {
     }
 
 
-    // =========================
-    // FIND USER BY SOCKET
-    // =========================
+    
 
     get_user_by_socket(socket: WebSocket) {
 
@@ -153,11 +138,7 @@ export class room_pond {
 
     }
 
-
-    // =========================
-    // FIND USER'S CURRENT ROOM
-    // =========================
-
+    // current room of the user
     get_user_room(socket: WebSocket) {
 
         const user = this.users.get(socket);
@@ -169,11 +150,6 @@ export class room_pond {
         return this.rooms.get(user.current_room_id);
 
     }
-
-
-    // =========================
-    // REMOVE USER
-    // =========================
 
     remove_user(socket: WebSocket) {
 
