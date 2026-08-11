@@ -376,7 +376,6 @@ wss.on("connection", (ws: WebSocket) => {
 
                     break;
                 }
-
             }
 
         } catch (error) {
