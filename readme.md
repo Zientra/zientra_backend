@@ -9,4 +9,4 @@
 
 ## Future Aspects 
 * **Persistent AI Teammates:** Prebuilt agents learn your team's workflows, preferences, and project context, becoming more useful the longer you work with them.
-* **Adaptive Agent Memory: Agents will learn from human feedback and past interactions, allowing them to continuously improve their behavior and recommendations.
+* **Adaptive Agent Memory:** Agents will learn from human feedback and past interactions, allowing them to continuously improve their behavior and recommendations.
