@@ -6,7 +6,6 @@
 
 import { WebSocketServer, WebSocket } from "ws";
 import { room_pond } from "./dtypes/room_pond";
-import { User } from "./dtypes/user";
 import { Message } from "./dtypes/message";
 
 const PORT = Number(process.env.PORT) || 8080;
@@ -305,7 +304,7 @@ wss.on("connection", (ws: WebSocket) => {
                     break;
                 }
 
-                // CHANGE THE LANGUAGE 
+                // CHANGE THE LANGUAGE  
                 case "change_language": {
 
                     try {
